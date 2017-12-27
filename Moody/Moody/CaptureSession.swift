@@ -12,22 +12,23 @@ import AVFoundation
 
 protocol CaptureSessionDelegate: class {
     func captureSessionDidChangeAuthorizationStatus(authorized: Bool)
+    func captureSessionDidCapture(_ image: UIImage?)
 }
 
 
-class CaptureSession {
-
-    var authorized: Bool {
-        return AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo) == .Authorized
+class CaptureSession: NSObject {
+    var isAuthorized: Bool {
+        return AVCaptureDevice.authorizationStatus(for: AVMediaType.video) == .authorized
     }
 
-    var ready: Bool {
+    var isReady: Bool {
         return !session.inputs.isEmpty
     }
 
     init(delegate: CaptureSessionDelegate) {
         self.delegate = delegate
-        if authorized {
+        super.init()
+        if isAuthorized {
             setup()
         } else {
             requestAuthorization()
@@ -35,67 +36,71 @@ class CaptureSession {
     }
 
     func start() {
-        dispatch_async(queue) { self.session.startRunning() }
+        #if !IOS_SIMULATOR
+            queue.async { self.session.startRunning() }
+        #endif
+
     }
 
     func stop() {
-        dispatch_async(queue) { self.session.stopRunning() }
+        #if !IOS_SIMULATOR
+            queue.async { self.session.stopRunning() }
+        #endif
     }
 
     func createPreviewLayer() -> AVCaptureVideoPreviewLayer {
         return AVCaptureVideoPreviewLayer(session: session)
     }
 
-    func takeImage(completion: UIImage? -> ()) {
-        dispatch_async(queue) {
-            guard let connection = self.cameraOutput.connectionWithMediaType(AVMediaTypeVideo) else {
-                dispatch_async(dispatch_get_main_queue()) { completion(nil) }
-                return
-            }
-            guard let orientation = AVCaptureVideoOrientation(rawValue: UIDevice.currentDevice().orientation.rawValue) else { fatalError("Unknown orientation constant") }
-            connection.videoOrientation = orientation
-            self.cameraOutput.captureStillImageAsynchronouslyFromConnection(connection) { buffer, error in
-                var image: UIImage?
-                if let buf = buffer, let data = AVCaptureStillImageOutput.jpegStillImageNSDataRepresentation(buf) {
-                   image = UIImage(data: data)
-                }
-                dispatch_async(dispatch_get_main_queue()) { completion(image) }
-            }
+    func captureImage() {
+        queue.async {
+            self.photoOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
         }
     }
 
 
     // MARK: - Private
 
-    private let session = AVCaptureSession()
-    private var cameraOutput: AVCaptureStillImageOutput!
-    private let queue = dispatch_queue_create("moody.capture-queue", DISPATCH_QUEUE_SERIAL)
-    private weak var delegate: CaptureSessionDelegate!
+    fileprivate let session = AVCaptureSession()
+    fileprivate var photoOutput: AVCapturePhotoOutput!
+    fileprivate let queue = DispatchQueue(label: "moody.capture-queue", attributes: [])
+    fileprivate weak var delegate: CaptureSessionDelegate!
 
-    private func setup() {
+    fileprivate func setup() {
+        #if !IOS_SIMULATOR
         session.sessionPreset = AVCaptureSessionPresetPhoto
-        if let devices = AVCaptureDevice.devicesWithMediaType(AVMediaTypeVideo) as? [AVCaptureDevice],
-           let camera = devices.findFirstOccurence({ $0.position == .Back })
-        {
+        let discovery = AVCaptureDeviceDiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaTypeVideo, position: .back)
+        if let camera = discovery?.devices.first {
             let input = try! AVCaptureDeviceInput(device: camera)
             if session.canAddInput(input) {
                 session.addInput(input)
             }
         }
-        cameraOutput = AVCaptureStillImageOutput()
-        if self.session.canAddOutput(cameraOutput) {
-            self.session.addOutput(cameraOutput)
+        photoOutput = AVCapturePhotoOutput()
+        if self.session.canAddOutput(photoOutput) {
+            self.session.addOutput(photoOutput)
         }
+        #endif
     }
 
-    private func requestAuthorization() {
-        AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { auth in
-            dispatch_async(dispatch_get_main_queue()) {
-                self.delegate.captureSessionDidChangeAuthorizationStatus(auth)
-                guard auth else { return }
+    fileprivate func requestAuthorization() {
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { authorized in
+            DispatchQueue.main.async {
+                self.delegate.captureSessionDidChangeAuthorizationStatus(authorized: authorized)
+                guard authorized else { return }
                 self.setup()
             }
         }
     }
-
 }
+
+
+extension CaptureSession: AVCapturePhotoCaptureDelegate {
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        let image = photo.fileDataRepresentation().flatMap(UIImage.init)
+        DispatchQueue.main.async {
+            self.delegate.captureSessionDidCapture(image)
+        }
+    }
+}
+

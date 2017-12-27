@@ -1,6 +1,5 @@
 {
-  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C94DEAC25159F8E0C374997002E08B259F2C330B",
-  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C94DEAC25159F8E0C374997002E08B259F2C330B", "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
@@ -11,8 +10,7 @@
   "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "26DAE5A5-0AFB-416E-BD78-14266C11B28A",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
     "3642B9C2595E4DBE94B8CE549AE37A84C04234BD" : "core-data-bookMoody\/lib\/DominantColor",
-    "C94DEAC25159F8E0C374997002E08B259F2C330B" : "core-data\/",
-    "BBA5EDA3CA72EFF0894661E3303EE217ACDFD395" : "core-data-book"
+    "BBA5EDA3CA72EFF0894661E3303EE217ACDFD395" : "core-data-book\/"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "Moody",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
