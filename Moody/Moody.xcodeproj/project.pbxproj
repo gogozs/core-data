@@ -906,7 +906,7 @@
 				TargetAttributes = {
 					174495471AFB62A0007C9A75 = {
 						CreatedOnToolsVersion = 6.3.1;
-						DevelopmentTeam = 58PSC9526Y;
+						DevelopmentTeam = 2484Z5XMVT;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -1269,9 +1269,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3E931C561B9C245A00A1BA4C /* App-Target.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 58PSC9526Y;
+				DEVELOPMENT_TEAM = 2484Z5XMVT;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.objc.CoreDataMoody;
+				PRODUCT_BUNDLE_IDENTIFIER = me.songzhou.coredata;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
@@ -1280,9 +1280,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 3E931C561B9C245A00A1BA4C /* App-Target.xcconfig */;
 			buildSettings = {
-				DEVELOPMENT_TEAM = 58PSC9526Y;
+				DEVELOPMENT_TEAM = 2484Z5XMVT;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.objc.CoreDataMoody;
+				PRODUCT_BUNDLE_IDENTIFIER = me.songzhou.coredata;
 				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
