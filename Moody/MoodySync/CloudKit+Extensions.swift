@@ -151,6 +151,8 @@ extension NSError {
         case .managedAccountRestricted: return true
         case .participantMayNeedVerification: return true
         case .serverResponseLost: return false
+        case .assetNotAvailable:
+            return false
         }
     }
 }
